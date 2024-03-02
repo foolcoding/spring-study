@@ -1,0 +1,74 @@
+<!DOCTYPE mapper PUBLIC
+	 "//mybatis.org//DTD Mapper 3.0//EN"
+	 "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+	 
+<mapper namespace="com.itbank.repository.surveyDAO">
+	<select id="selectList">
+		select * from survey
+		where title like '%' || #{search} || '%'  
+		order by idx desc 
+		offset #{paging.offset} rows 
+		fetch next #{paging.fetch} rows only
+	</select>
+	
+	<select id="selectCount">
+		select count(*) from survey
+		<if test='search != null'>
+			where title like '%' || #{search} || '%'
+		</if>
+	</select>
+	
+	<select id="selectOne">
+		select * from survey
+		where idx = #{idx}
+	</select>
+	
+	<insert id="insertSurvey">
+		insert into survey (title, writer, question, memoA, memoB)
+			values(#{title}, #{writer}, #{question}, #{memoA}, #{memoB})
+	</insert>
+	
+	<select id="getSurvey_seq">
+		select survey_seq.currval from dual
+	</select>
+	
+	<insert id="insertUpload">
+		insert into upload2 (sv_idx, originalFileName, storeFileName)
+			values(#{sv_idx}, #{originalFileName}, #{storeFileName})
+	</insert>
+
+	<select id="selectUploadOne">
+		select * from survey S
+    		join upload2 U
+        		on S.idx = U.sv_idx
+            		where S.idx = #{idx}
+	</select>
+	
+	<select id="selectOneUpload">
+		select * from upload2
+			where sv_idx = #{idx}
+	</select>
+	
+	<insert id="insertAnswer">
+		insert into answer (sv_idx, m_userid, answer)
+			values (#{sv_idx}, #{m_userid}, #{answer})
+	</insert>
+	
+	<select id="selectResult">
+		select answer, count(*) as count from answer 
+			where sv_idx = #{idx}
+				group by answer
+	</select>
+	
+	<delete id="delete">
+		delete survey where idx = #{idx}
+	</delete>
+	
+	<delete id="deleteUpload">
+		delete upload2 where sv_idx = #{idx}
+	</delete>
+	
+	<delete id="deleteAnswer">
+		delete answer where sv_idx = #{idx}
+	</delete>
+</mapper>
