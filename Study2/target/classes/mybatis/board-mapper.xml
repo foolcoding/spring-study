@@ -1,0 +1,39 @@
+<!DOCTYPE mapper PUBLIC
+	 "//mybatis.org//DTD Mapper 3.0//EN"
+	 "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+	 
+<mapper namespace="com.itbank.repository.BoardDAO">
+	<select id="selectList" resultType="board">
+		select * from board3 order by isNotice desc, idx desc
+	</select>
+	<select id="selectOne" resultType="board" parameterType="int">
+		select * from board3 where idx=#{idx}
+	</select>
+	<select id="pageList" resultType="board" parameterType="Map">
+		select * from board3
+		where title like '%' || #{search} || '%'  
+		order by isNotice desc, idx desc 
+		offset #{paging.offset} rows 
+		fetch next #{paging.fetch} rows only
+	</select>
+	<select id="selectCount" resultType="int" parameterType="String">
+		select count(*) from board3 
+		<if test='search != null'>
+			where title like '%' || #{search} || '%'
+		</if>
+	</select>
+	
+	<insert id="insert">
+		insert into board3 (title, writer, content, isNotice)
+			values(#{title}, #{writer}, #{content}, #{isNotice})
+	</insert>
+	
+	<update id="update">
+		update board3 set title=#{title}, content=#{content}, isNotice=#{isNotice}
+			where idx=#{idx}
+	</update>
+	
+	<delete id="delete" parameterType="int">
+		delete from board3 where idx=#{idx}
+	</delete>
+</mapper>
